@@ -1,6 +1,7 @@
 var API_KEY = "e10ccdb3a19b249cd2972d9f7dfeb65a";
 var URL = "https://api.openweathermap.org/data/2.5/weather";
 
+//Elements
 var form = document.querySelector("form");
 var input = document.getElementById("weather-search");
 var weatherSection = document.getElementById("weather");
@@ -16,7 +17,7 @@ form.onsubmit = function (e) {
     if (!userQuery) return;
 
     var fetchURL = URL + "?q=" + userQuery + "&units=imperial&appid=" + API_KEY;
-    
+
     fetch(fetchURL)
         .then(function (response) {
             return response.json();
@@ -36,6 +37,7 @@ form.onsubmit = function (e) {
         });
 };
 
+//Display weather data
 function displayWeather(data) {
     var city = data.name;
     var country = data.sys.country;
@@ -47,6 +49,7 @@ function displayWeather(data) {
     var lon = data.coord.lon;
     var timestamp = data.dt;
 
+    //Icon and map URLs, convert to readable time
     var iconURL = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
     var mapURL = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon;
     var timeString = new Date(timestamp * 1000).toLocaleTimeString("en-US", {
@@ -54,6 +57,7 @@ function displayWeather(data) {
         minute: "2-digit"
     });
 
+    //Render HTML
     weatherSection.innerHTML =
         "<h2>" + city + ", " + country + "</h2>" +
         '<a href="' + mapURL + '" target="_blank">Click to view map</a>' +
