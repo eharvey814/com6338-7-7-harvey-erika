@@ -1,44 +1,41 @@
 var API_KEY = "e10ccdb3a19b249cd2972d9f7dfeb65a";
 var URL = "https://api.openweathermap.org/data/2.5/weather";
 
-//Elements
 var form = document.querySelector("form");
 var input = document.getElementById("weather-search");
 var weatherSection = document.getElementById("weather");
 
-//Event Listener
 form.onsubmit = function (e) {
     e.preventDefault();
 
     var userQuery = input.value.trim();
 
-    //Clear previous weather results
+    // Clear previous weather results
     weatherSection.innerHTML = "";
 
     if (!userQuery) return;
 
-    var fetchURL = URL + "?q=" + encodeURIComponent(userQuery) + "&units=imperial&appid=" + API_KEY;
-
+    var fetchURL = URL + "?q=" + userQuery + "&units=imperial&appid=" + API_KEY;
+    
     fetch(fetchURL)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("Location not found");
-            }
+        .then(function (response) {
             return response.json();
         })
-        .then((data) => {
+        .then(function (data) {
+            if (data.cod && (data.cod === "404" || data.cod === 404)) {
+                weatherSection.innerHTML = "<h2>Location not found</h2>";
+                input.value = "";
+                return;
+            }
             displayWeather(data);
+            input.value = "";
         })
-        .catch(() => {
+        .catch(function (error) {
             weatherSection.innerHTML = "<h2>Location not found</h2>";
-        })
-        .finally(() => {
-            // reset input
             input.value = "";
         });
 };
 
-//Display function
 function displayWeather(data) {
     var city = data.name;
     var country = data.sys.country;
@@ -50,28 +47,19 @@ function displayWeather(data) {
     var lon = data.coord.lon;
     var timestamp = data.dt;
 
-    //Icon URL
-    var iconURL =
-        "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
-
-    //Google Maps URL
+    var iconURL = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
     var mapURL = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon;
-
-    // Convert to readable time
-    var date = new Date(timestamp * 1000);
-    var timeString = date.toLocaleTimeString("en-US", {
+    var timeString = new Date(timestamp * 1000).toLocaleTimeString("en-US", {
         hour: "numeric",
-        minute: "2-digit",
+        minute: "2-digit"
     });
 
-    // HTML
-     weatherSection.innerHTML =
+    weatherSection.innerHTML =
         "<h2>" + city + ", " + country + "</h2>" +
-        '<a href="' + mapURL + '" target="__BLANK">Click to view map</a>' +
+        '<a href="' + mapURL + '" target="_blank">Click to view map</a>' +
         '<img src="' + iconURL + '">' +
         '<p style="text-transform: capitalize;">' + description + "</p><br>" +
         "<p>Current: " + temp + "° F</p>" +
         "<p>Feels like: " + feelsLike + "° F</p><br>" +
         "<p>Last updated: " + timeString + "</p>";
 }
-
