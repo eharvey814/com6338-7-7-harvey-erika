@@ -1,4 +1,4 @@
-var API_KEY = "7c3f17db3015be66f8e23ed95ff0d71f";
+var API_KEY = "e10ccdb3a19b249cd2972d9f7dfeb65a";
 var URL = "https://api.openweathermap.org/data/2.5/weather";
 
 //Elements
@@ -17,12 +17,7 @@ form.onsubmit = function (e) {
 
     if (!userQuery) return;
 
-    var fetchURL =
-        URL +
-        "?units=imperial&appid=" +
-        API_KEY +
-        "&q=" +
-        userQuery;
+    var fetchURL = URL + "?q=" + encodeURIComponent(userQuery) + "&units=imperial&appid=" + API_KEY;
 
     fetch(fetchURL)
         .then((response) => {
@@ -60,11 +55,7 @@ function displayWeather(data) {
         "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
 
     //Google Maps URL
-    var mapURL =
-        "https://www.google.com/maps/search/?api=1&query=" +
-        lat +
-        "," +
-        lon;
+    var mapURL = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon;
 
     // Convert to readable time
     var date = new Date(timestamp * 1000);
@@ -74,14 +65,13 @@ function displayWeather(data) {
     });
 
     // HTML
-    weatherSection.innerHTML = `
-    <h2>${city}, ${country}</h2>
-    <a href="${mapURL}" target="_blank">Click to view map</a>
-    <img src="${iconURL}">
-    <p style="text-transform: capitalize;">${description}</p><br>
-    <p>Current: ${temp}° F</p>
-    <p>Feels like: ${feelsLike}° F</p><br>
-    <p>Last updated: ${timeString}</p>
-  `;
+     weatherSection.innerHTML =
+        "<h2>" + city + ", " + country + "</h2>" +
+        '<a href="' + mapURL + '" target="__BLANK">Click to view map</a>' +
+        '<img src="' + iconURL + '">' +
+        '<p style="text-transform: capitalize;">' + description + "</p><br>" +
+        "<p>Current: " + temp + "° F</p>" +
+        "<p>Feels like: " + feelsLike + "° F</p><br>" +
+        "<p>Last updated: " + timeString + "</p>";
 }
 
